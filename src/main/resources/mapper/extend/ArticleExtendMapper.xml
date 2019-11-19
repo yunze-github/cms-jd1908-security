@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.apps.cms.dao.extend.ArticleExtendMapper">
+
+    <!--级联查询：查看文章以及所属栏目-->
+    <resultMap id="ArticleWithCategoryResult" type="com.briup.apps.cms.bean.extend.ArticleExtend"
+               extends="com.briup.apps.cms.dao.ArticleMapper.ResultMapWithBLOBs">
+      <association property="author" resultMap="com.briup.apps.cms.dao.UserMapper.BaseResultMap"></association>
+      <association property="category" resultMap="com.briup.apps.cms.dao.extend.CategoryExtendMapper.CategoryExtendsResultMap"></association>
+    </resultMap>
+
+    <!--查询文章以及文章的栏目信息和多条评论-->
+    <resultMap id="ArticleWithCategoryAndCommentResult" type="com.briup.apps.cms.bean.extend.ArticleExtend"
+               extends="com.briup.apps.cms.dao.ArticleMapper.ResultMapWithBLOBs">
+      <association property="category" resultMap="com.briup.apps.cms.dao.CategoryMapper.BaseResultMap"></association>
+      <association property="author" resultMap="com.briup.apps.cms.dao.UserMapper.BaseResultMap"></association>
+      <collection property="commentExtends" resultMap="com.briup.apps.cms.dao.extend.CommentExtendMapper.CommentWithUserResultMap"></collection>
+    </resultMap>
+
+    <!--查询-->
+    <!--栏目下的文章-->
+  <select id="selectAllArticleWithCategoryByCategoryId" parameterType="long" resultMap="ArticleWithCategoryResult">
+    select
+        art.title,art.content,art.source,art.publish_time,art.thumb_up,art.thumb_down,
+        cat.name,cat.description,cat.no
+    from
+        cms_article art,cms_category cat
+    where
+        art.category_id=cat.id
+        and
+        cat.id=#{categoryId}
+  </select>
+
+    <!--没有栏目的文章-->
+    <select id="selectAllArticle" resultMap="ArticleWithCategoryResult">
+    select
+        art.id,art.title,art.content,art.source,art.publish_time,art.thumb_up,art.thumb_down,art.author_id,art.category_id,
+        cat.name,cat.description,cat.no,
+        user.username
+    from
+        cms_article art,cms_category cat,cms_user user
+    where
+        art.category_id=cat.id
+        and
+        art.author_id=user.id
+  </select>
+
+    <!--详看栏目的文章以及评论-->
+    <select id="selectArtiacleWithCateGoryAndCommentByID" parameterType="long"
+            resultMap="ArticleWithCategoryAndCommentResult">
+      select
+        art.title,art.content,art.source,art.publish_time,art.thumb_up,art.thumb_down,art.author_id,art.category_id,art.comment_id
+        cat.name,cat.description,cat.no,
+        aut.username,
+        com.content,com.comment_time,ucom.username
+      from
+          cms_article art,cms_category cat,cms_user aut,cms_comment com,cms_user ucom
+      where
+          art.category_id=cat.id
+          and
+          art.author_id=aut.id
+          and
+          art.id=com.article_id
+          and
+          com.user_id=ucom.id
+          and
+          art.id = #{articleId}
+    </select>
+
+
+</mapper>

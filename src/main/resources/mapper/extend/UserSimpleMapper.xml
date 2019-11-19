@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.apps.cms.dao.extend.UserSimpleMapper">
+
+    <resultMap id="UserSimpleResultMap" type="com.briup.apps.cms.bean.security.UserSimple">
+        <result property="username" column="name"></result>
+        <result property="password" column="pass"></result>
+        <collection property="roles" resultMap="com.briup.apps.cms.dao.extend.RoleExtendMapper.RoleExtendResultMap"></collection>
+    </resultMap>
+
+    <select id="selectUserSimpleByName" parameterType="string" resultMap="UserSimpleResultMap">
+        select
+            user.username name,user.password pass,role.id,role.name,pri.id,pri.name,pri.description,pri.route,pri.type,  pri.icon
+        from
+            cms_user user,cms_role role,cms_privilege pri,cms_role_privilege crp,cms_user_role cur
+        where
+            user.username = #{username}
+            and user.id = cur.user_id
+            and cur.role_id = role.id
+            and role.id = crp.role_id
+            and crp.privilege_id = pri.id
+    </select>
+
+
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.apps.cms.dao.extend.RoleExtendMapper">
+
+    <resultMap id="RoleExtendResultMap" type="com.briup.apps.cms.bean.extend.RoleExtend" extends="com.briup.apps.cms.dao.RoleMapper.BaseResultMap">
+        <collection property="privilegeExtends" resultMap="com.briup.apps.cms.dao.PrivilegeMapper.BaseResultMap"></collection>
+    </resultMap>
+
+    <!--删除多个栏目-->
+    <delete id="deleteRoleIds" parameterType="arraylist" >
+        delete from cms_role
+        <if test="roleIds != null">
+            <where>
+                id in
+                <foreach item="roleId" collection="roleIds" open="(" separator="," close=")">
+                    #{roleId}
+                </foreach>
+            </where>
+        </if>
+    </delete>
+</mapper>

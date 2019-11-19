@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.apps.cms.dao.extend.CategoryExtendMapper">
+  <resultMap id="CategorysResultMap" type="com.briup.apps.cms.bean.Category" extends="com.briup.apps.cms.dao.CategoryMapper.BaseResultMap">
+  </resultMap>
+
+  <resultMap id="CategoryExtendsResultMap" type="com.briup.apps.cms.bean.extend.CategoryExtend" extends="com.briup.apps.cms.dao.CategoryMapper.BaseResultMap">
+    <collection property="categoryExtends" ofType="com.briup.apps.cms.bean.extend.CategoryExtend" resultMap="CategoryExtendsResultMap"></collection>
+  </resultMap>
+
+  <select id="selectAllCategorys" resultMap="CategorysResultMap">
+    select *
+    from cms_category
+  </select>
+
+  <!--删除多个栏目-->
+  <delete id="deleteCategoryIds" parameterType="arraylist" >
+    delete from cms_category
+    <if test="categoryIds != null">
+      <where>
+        id in
+        <foreach item="categoryId" collection="categoryIds" open="(" separator="," close=")">
+          #{categoryId}
+        </foreach>
+      </where>
+    </if>
+  </delete>
+</mapper>

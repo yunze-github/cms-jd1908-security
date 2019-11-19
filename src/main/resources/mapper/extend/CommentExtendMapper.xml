@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.apps.cms.dao.extend.CommentExtendMapper">
+
+
+    <resultMap id="CommentWithUserResultMap" type="com.briup.apps.cms.bean.extend.CommentExtend"
+               extends="com.briup.apps.cms.dao.CommentMapper.ResultMapWithBLOBs">
+      <association property="userExtend" resultMap="com.briup.apps.cms.dao.UserMapper.BaseResultMap"></association>
+      <collection property="commentExtends" resultMap="CommentWithUserResultMap"></collection>
+    </resultMap>
+
+
+    <select id="selectCommentsByArticleId" parameterType="long" resultMap="CommentWithUserResultMap">
+        select com1.id,com1.content,com2.content
+        from cms_comment com1,cms_comment com2
+        where com1.id = com2.id
+            and com1.articleId = #{articleId,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteComments" parameterType="arraylist">
+        delete from cms_comment
+        <if test="ids != null">
+            <where>
+                id in 
+                <foreach collection="ids" item="id" open="(" separator="," close=")">
+                    #{id,jdbcType=BIGINT}
+                </foreach>
+            </where>
+        </if>
+    </delete>
+
+
+</mapper>
