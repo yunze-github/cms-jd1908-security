@@ -7,17 +7,18 @@ import java.util.Date;
 
 public class MessageUtil {
 
-    public static final int STATUS_ERROR = 50000;
-    public static final int STATUS_SUCCESS_QUERY_ONE = 20000;
-    public static final int STATUS_SUCCESS_QUERY_ALL = 20001;
-    public static final int STATUS_SUCCESS_SAVE = 20010;
-    public static final int STATUS_SUCCESS_UPDATE = 20020;
-    public static final int STATUS_SUCCESS_DELETE_ONE= 20030;
-    public static final int STATUS_SUCCESS_DELETE_ALL= 20031;
-    public static final int STATUS_SUCCESS_CHECK_NAME= 20040;
-    public static final int STATUS_SUCCESS_CHECK_PASS= 20041;
-    public static final int STATUS_SUCCESS_USER_ALTER= 20050;
-    public static final int STATUS_SUCCESS_USER_REGISTER= 20050;
+    public static final int STATUS_ERROR = 5000;
+    public static final int STATUS_SUCCESS_QUERY_ONE = 2000;
+    public static final int STATUS_SUCCESS_QUERY_ALL = 2001;
+    public static final int STATUS_SUCCESS_SAVE = 2010;
+    public static final int STATUS_SUCCESS_UPDATE = 2020;
+    public static final int STATUS_SUCCESS_DELETE_ONE= 2030;
+    public static final int STATUS_SUCCESS_DELETE_ALL= 2031;
+    public static final int STATUS_SUCCESS_CHECK_NAME= 2040;
+    public static final int STATUS_SUCCESS_CHECK_LoginIn= 2041;
+    public static final int STATUS_SUCCESS_CHECK_Loginout= 2042;
+    public static final int STATUS_SUCCESS_USER_ALTER= 2050;
+    public static final int STATUS_SUCCESS_USER_REGISTER= 20051;
 
     public static final String MESSAGE_SUCCESS_QUERY_ONE ="成功查询一条!";
     public static final String MESSAGE_SUCCESS_QUERY_ALL ="成功查询多条!";
@@ -26,9 +27,10 @@ public class MessageUtil {
     public static final String MESSAGE_SUCCESS_DELETE_ONE ="成功删除一条!";
     public static final String MESSAGE_SUCCESS_DELETE_ALL ="成功删除多条!";
     public static final String MESSAGE_SUCCESS_CHECK_NAME ="姓名检测通过!";
-    public static final String MESSAGE_SUCCESS_CHECK_PASS ="用户登录成功!";
+    public static final String MESSAGE_SUCCESS_CHECK_LoginIn ="用户登录成功!";
     public static final String MESSAGE_SUCCESS_USER_ALTER ="用户注册成功!";
     public static final String MESSAGE_SUCCESS_USER_REGISTER ="用户信息修改成功!";
+    public static final String MESSAGE_SUCCESS_USER_Loginout ="用户退出成功!";
 
     /**
      * 返回失败消息，一般用于增删改操作的结果返回

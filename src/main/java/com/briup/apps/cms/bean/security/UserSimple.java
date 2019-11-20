@@ -49,7 +49,9 @@ public class UserSimple implements UserDetails {
         this.roles = roles;
     }
 
-    //将用户权限添加至
+    /*
+    授予用户角色的权限添加至
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> auths = new ArrayList<>();

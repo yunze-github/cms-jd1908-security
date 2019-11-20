@@ -4,8 +4,10 @@ import com.briup.apps.cms.bean.Role;
 import com.briup.apps.cms.bean.User;
 import com.briup.apps.cms.bean.UserExample;
 import com.briup.apps.cms.bean.extend.UserExtend;
+import com.briup.apps.cms.bean.security.UserSimple;
 import com.briup.apps.cms.dao.UserMapper;
 import com.briup.apps.cms.dao.extend.UserExtendMapper;
+import com.briup.apps.cms.dao.extend.UserSimpleMapper;
 import com.briup.apps.cms.exception.CustomerException;
 import com.briup.apps.cms.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +27,19 @@ import java.util.List;
 public class UserServiceImpl implements IUserService {
 
     @Autowired
+    private UserSimpleMapper userSimpleMapper;
+    @Autowired
     private UserMapper userMapper;
     @Autowired
     private UserExtendMapper userExtendMapper;
 
     //查找所有用户
     @Override
-    public List<User> findAll() {
+    public User findOne(Long id) {
         UserExample userExample = new UserExample();
-        return userMapper.selectByExample(userExample);
+        userExample.createCriteria().andIdEqualTo(id);
+        List<User> list = userMapper.selectByExample(userExample);
+        return list.get(0);
     }
 
     //检测姓名是否在数据库中
@@ -49,13 +55,17 @@ public class UserServiceImpl implements IUserService {
 
     //检测用户登录信息
     @Override
-    public void checkLogin(String username,String password) throws CustomerException {
+    public User login(UserSimple userSimple) throws CustomerException {
+        //检测名字
+        checkName(userSimple.getUsername());
+        //检测密码
         UserExample userExample = new UserExample();
-        userExample.createCriteria().andUsernameEqualTo(username).andPasswordEqualTo(password);
+        userExample.createCriteria().andPasswordEqualTo(userSimple.getPassword());
         List<User> list = userMapper.selectByExample(userExample);
         if (list.size()==0){
             throw new CustomerException("密码错误!");
         }
+        return list.get(0);
     }
 
     //注册用户

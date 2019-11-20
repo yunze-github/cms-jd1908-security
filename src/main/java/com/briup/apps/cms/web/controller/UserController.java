@@ -1,7 +1,9 @@
 package com.briup.apps.cms.web.controller;
 
 import com.briup.apps.cms.bean.User;
+import com.briup.apps.cms.bean.security.UserSimple;
 import com.briup.apps.cms.service.IUserService;
+import com.briup.apps.cms.utils.JwtTokenUtil;
 import com.briup.apps.cms.utils.Message;
 import com.briup.apps.cms.utils.MessageUtil;
 import io.swagger.annotations.ApiImplicitParam;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotNull;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <h3>cms_jd1908</h3>
@@ -24,6 +28,7 @@ import java.util.Date;
  **/
 @RestController
 @Validated
+@CrossOrigin
 @RequestMapping("user")
 public class UserController {
 
@@ -33,32 +38,58 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @ApiOperation("查询所有用户信息!")
-    @GetMapping("/findAll")
-    public Message findAll() {
-        return MessageUtil.success(MessageUtil.MESSAGE_SUCCESS_QUERY_ALL,
-                MessageUtil.STATUS_SUCCESS_QUERY_ALL, userService.findAll());
+    @ApiOperation("查询用户信息!")
+    @GetMapping("/info")
+    public Message info(@NotNull @RequestParam String token) {
+        //
+        return MessageUtil.success(MessageUtil.MESSAGE_SUCCESS_QUERY_ONE,
+                MessageUtil.STATUS_SUCCESS_QUERY_ONE, userService.findOne(1l));
     }
 
     /*
     用户登录
      */
+
     @ApiOperation("检查用户姓名")
-    @PostMapping("/checkName")
-    public Message cheackName(String username) {
+    @GetMapping("/checkName")
+    public Message cheackName(@NotNull @RequestParam String username) {
         userService.checkName(username);
         return MessageUtil.success(MessageUtil.MESSAGE_SUCCESS_CHECK_NAME,MessageUtil.STATUS_SUCCESS_CHECK_NAME);
     }
 
     @ApiOperation("检查用户登录信息")
+    @RequestMapping(value = "/login",method = {RequestMethod.POST})
+    public Message login(@NotNull @RequestBody UserSimple userSimple) {
+        System.out.println(userSimple.getUsername()+userSimple.getPassword());
+        userService.login(userSimple);
+        // 1. 认证用户的用户名和密码
+        User user = userService.login(userSimple);
+        // 2. 如果登录成功产生token,将token缓存起来，返回
+        String token = JwtTokenUtil.createJWT(user.getId(), user.getUsername());
+        // 3. 如果登录失败
+        Map<String,String> map = new HashMap<>();
+        map.put("token",token);
+        return MessageUtil.success(MessageUtil.MESSAGE_SUCCESS_CHECK_LoginIn,MessageUtil.STATUS_SUCCESS_CHECK_LoginIn,map);
+    }
+    //用户退出
+
+    @PostMapping("/logout")
+    public Message logout(){
+        // 1. 登录， token从缓存中移除掉
+        return MessageUtil.success(MessageUtil.MESSAGE_SUCCESS_USER_Loginout,MessageUtil.STATUS_SUCCESS_CHECK_Loginout);
+    }
+    /*
+    用户注销
+     */
+
+    @ApiOperation("用户注销")
     @ApiImplicitParams({
-            @ApiImplicitParam(paramType = "query", dataType = "String", name = "username", value = "用戶注册信息!"),
-            @ApiImplicitParam(paramType = "query", dataType = "String", name = "password", value = "用戶注册信息!")
+            @ApiImplicitParam(paramType = "query",dataType = "Long",required = true,name = "id",value = "用户ID"),
     })
-    @PostMapping("/login")
-    public Message login(String username, String password) {
-        userService.checkLogin(username, password);
-        return MessageUtil.success(MessageUtil.MESSAGE_SUCCESS_CHECK_PASS,MessageUtil.STATUS_SUCCESS_CHECK_PASS);
+    @GetMapping("/drop")
+    public Message drop(@NotNull Long id) {
+        userService.drop(id);
+        return MessageUtil.success(MessageUtil.MESSAGE_SUCCESS_DELETE_ALL,MessageUtil.STATUS_SUCCESS_DELETE_ALL);
     }
 
     /*
@@ -113,19 +144,6 @@ public class UserController {
         user.setUserFace(userFace);
         userService.update(user);
         return MessageUtil.success(MessageUtil.MESSAGE_SUCCESS_USER_ALTER,MessageUtil.STATUS_SUCCESS_USER_ALTER);
-    }
-
-    /*
-    用户注销
-     */
-    @ApiOperation("用户注销")
-    @ApiImplicitParams({
-            @ApiImplicitParam(paramType = "query",dataType = "Long",required = true,name = "id",value = "用户ID"),
-    })
-    @GetMapping("/drop")
-    public Message drop(@NotNull Long id) {
-        userService.drop(id);
-        return MessageUtil.success(MessageUtil.MESSAGE_SUCCESS_DELETE_ALL,MessageUtil.STATUS_SUCCESS_DELETE_ALL);
     }
 
     /*
